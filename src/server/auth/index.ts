@@ -1,4 +1,3 @@
-import { PrismaAdapter } from '@auth/prisma-adapter';
 import {
   getServerSession,
   type DefaultSession,
@@ -6,20 +5,19 @@ import {
 } from 'next-auth';
 import { type Adapter } from 'next-auth/adapters';
 
-import { prisma } from '@/server/db';
 import Credentials from 'next-auth/providers/credentials';
 import { authorize } from './authorize';
+import GoogleProvider from 'next-auth/providers/google';
+import { FirestoreAdapter } from '@auth/firebase-adapter';
+import { firestore } from '@/lib/firebase.admin';
 
 /**
- * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
- * object and keep type safety.
- *
- * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
+ * Module augmentation for `next-auth` types.
  */
 declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
-      id: number;
+      id: string;
       name: string;
       email: string;
     } & DefaultSession['user'];
@@ -33,19 +31,16 @@ declare module 'next-auth' {
 }
 
 /**
- * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
- *
- * @see https://next-auth.js.org/configuration/options
+ * Options for NextAuth.js
  */
 export const authOptions: NextAuthOptions = {
   session: { strategy: 'jwt' },
   jwt: {
     secret: process.env.NEXTAUTH_SECRET,
-    maxAge: 1 * 24 * 30 * 60, // 1 days
+    maxAge: 1 * 24 * 30 * 60, // 1 dia
   },
   pages: {
     signIn: '/login',
-    // newUser: "/auth/register",
   },
   callbacks: {
     jwt: ({ token, user }) => {
@@ -54,21 +49,18 @@ export const authOptions: NextAuthOptions = {
         token.name = user.name;
         token.email = user.email;
       }
-      // if (trigger === "update" && session?.companyId) {
-      //   token.companyId = session.companyId;
-      // }
       return token;
     },
     session: ({ session, token }) => {
       if (token) {
-        session.user.id = token.id as number;
+        session.user.id = token.id as string;
         session.user.name = token.name as string;
         session.user.email = token.email as string;
       }
       return session;
     },
   },
-  adapter: PrismaAdapter(prisma) as Adapter,
+  adapter: FirestoreAdapter(firestore) as Adapter,
   providers: [
     Credentials({
       name: 'credentials',
@@ -78,12 +70,21 @@ export const authOptions: NextAuthOptions = {
       },
       authorize,
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code',
+        },
+      },
+    }),
   ],
 };
 
 /**
- * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
- *
- * @see https://next-auth.js.org/configuration/nextjs
+ * Wrapper for `getServerSession`
  */
 export const getServerAuthSession = () => getServerSession(authOptions);

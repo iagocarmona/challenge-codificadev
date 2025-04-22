@@ -9,7 +9,7 @@ import {
   Mail,
 } from 'lucide-react';
 import Link from 'next/link';
-
+import { FcGoogle } from 'react-icons/fc';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useState } from 'react';
@@ -25,6 +25,7 @@ export default function LoginPage(): JSX.Element {
   const [seePass, setSeePass] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [loadingGoogle, setLoadingGoogle] = useState(false);
 
   const PasswordIcon = seePass ? EyeOff : Eye;
 
@@ -61,16 +62,26 @@ export default function LoginPage(): JSX.Element {
     setDisabled(false);
   }
 
+  async function handleGoogleSignIn() {
+    try {
+      setLoadingGoogle(true);
+      await signIn('google', { callbackUrl: '/dashboard' });
+    } catch (error) {
+      console.error('Erro no login com Google:', error);
+      setLoadingGoogle(false);
+    }
+  }
+
   return (
     <AuthLayout>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid w-full gap-6 pb-6">
             <div>
-              <h1 className="text-xl font-bold text-foreground">
-                Bem vindo a Thai-Boxe Manager
+              <h1 className="mt-8 text-xl font-bold text-foreground">
+                Bem vindo ao desafio
               </h1>
-              <p className="text-sm text-muted-foreground">Team Sartorato</p>
+              <p className="text-sm text-muted-foreground">Codifica Dev</p>
             </div>
             <div className="grid gap-4">
               <FormInputComponent
@@ -120,17 +131,36 @@ export default function LoginPage(): JSX.Element {
                   <AlertDescription>{errorMessage}</AlertDescription>
                 </Alert>
               )}
-            </div>
 
-            <Button
-              className="w-full bg-primary py-6 font-medium"
-              type="submit"
-              disabled={disabled}
-            >
-              {disabled && <LoaderCircle className="mr-1 h-5 animate-spin" />}
-              Entrar
-              <ArrowRight size={18} className="ml-1" />
-            </Button>
+              <Button
+                className="w-full bg-primary py-6 font-medium"
+                type="submit"
+                disabled={disabled}
+              >
+                {disabled && <LoaderCircle className="mr-1 h-5 animate-spin" />}
+                Entrar
+                <ArrowRight size={18} className="ml-1" />
+              </Button>
+
+              {/* Google auth */}
+              <div
+                className={`border-gray-30 flex h-auto w-full items-center justify-center rounded-md border py-2 transition ${
+                  loadingGoogle
+                    ? 'cursor-not-allowed opacity-70'
+                    : 'cursor-pointer hover:bg-foreground/20'
+                }`}
+                onClick={loadingGoogle ? undefined : handleGoogleSignIn}
+              >
+                {loadingGoogle ? (
+                  <LoaderCircle className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <FcGoogle size={30} />
+                    <span className="ml-2">Login com o Google</span>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         </form>
       </Form>

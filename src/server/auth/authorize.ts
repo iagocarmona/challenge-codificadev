@@ -1,8 +1,7 @@
 import { type User } from 'next-auth';
 import { loginSchema } from '@/server/validations/auth';
-import { prisma } from '../db';
-import { verify } from 'argon2';
-import lodash from 'lodash';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { firebaseAuth } from '@/lib/firebase-client'; // conexão client-side Firebase para autenticação
 
 export async function authorize(
   credentials: Record<'username' | 'password', string> | undefined,
@@ -10,25 +9,28 @@ export async function authorize(
   try {
     const creds = await loginSchema.parseAsync(credentials);
 
-    const user = await prisma.user.findFirst({
-      where: { email: creds.username.toLowerCase() },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        password: true,
-      },
-    });
+    // Autenticar no Firebase Authentication
+    const userCredential = await signInWithEmailAndPassword(
+      firebaseAuth,
+      creds.username,
+      creds.password,
+    );
+    const user = userCredential.user;
 
-    if (!user) return null;
+    if (!user) {
+      return null;
+    }
 
-    const isValidPassword = await verify(user.password, creds.password);
-    if (!isValidPassword) return null;
+    // Retornar o objeto User conforme o esperado pelo NextAuth
+    const returnUser: User = {
+      id: user.uid,
+      name: user.displayName || '',
+      email: user.email || '',
+    };
 
-    const returnUser = lodash.omit(user, ['password']) as User;
     return returnUser;
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Erro no authorize:', error);
+    return null;
   }
-  return null;
 }
