@@ -10,7 +10,7 @@ export default async function DashboardLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <AppSidebarProvider>
-      <div className="flex h-full w-full flex-col bg-background">
+      <div className="bg-background- flex h-full w-full flex-col">
         <ScrollArea className="hidden h-full w-full lg:flex">
           <AppSidebar />
         </ScrollArea>

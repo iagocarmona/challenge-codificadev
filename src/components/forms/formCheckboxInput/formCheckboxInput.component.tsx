@@ -1,7 +1,5 @@
 import React from 'react';
-
 import { Controller, FieldValues, UseControllerProps } from 'react-hook-form';
-
 import { FormCheckboxComponentProps } from './formCheckboxInput.types';
 import {
   FormControl,
@@ -60,6 +58,12 @@ export const FormCheckboxComponent = <T extends FieldValues>({
                           <FormLabel className="font-normal hover:cursor-pointer">
                             {props.label}
                           </FormLabel>
+                        ) : null}
+
+                        {props.labelElement ? (
+                          <div className="font-normal hover:cursor-pointer">
+                            {props.labelElement}
+                          </div>
                         ) : null}
 
                         {props.bottomDescription?.length ? (

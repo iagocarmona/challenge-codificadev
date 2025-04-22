@@ -27,7 +27,7 @@ import {
   createStudentSchema,
   defaultCreateStudentValues,
   IStudentCreateTypes,
-} from '@/server/validations/students';
+} from '@/server/validations/client';
 import { FormFileInputComponent } from '@/components/forms/formFileInput/formFileInput.component';
 import { blobUrlToBase64 } from '@/common/utils/files';
 

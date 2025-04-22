@@ -11,8 +11,9 @@ import { BreadcrumbProvider } from '@/contexts/breadcrumb';
 import { NextAuthProvider } from '@/server/auth/sessionprovider';
 
 export const metadata: Metadata = {
-  title: 'ThaiBoxe & Sartorato',
-  description: 'O melhor gerenciador de sistemas de Artes Marciais',
+  title: 'Challenge CodificaDev',
+  description:
+    'Challenge de crud de clients criado para usar como teste técnico para a empresa CodificaDev',
   icons: [{ rel: 'icon', url: '/favicon.ico' }],
 };
 

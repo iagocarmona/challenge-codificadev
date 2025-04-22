@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  LayoutDashboard,
-  Package,
-  ReceiptText,
-  Settings,
-  Users,
-} from 'lucide-react';
+import { Settings, Users } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -33,24 +27,9 @@ export function AppSidebar() {
 
   const items = [
     {
-      title: 'Dashboard',
-      url: '/dashboard',
-      icon: LayoutDashboard,
-    },
-    {
-      title: 'Alunos',
-      url: '/students',
+      title: 'Clientes',
+      url: '/clients',
       icon: Users,
-    },
-    {
-      title: 'Financeiro',
-      url: '/financial',
-      icon: ReceiptText,
-    },
-    {
-      title: 'Planos',
-      url: '/plans',
-      icon: Package,
     },
   ];
 
@@ -67,12 +46,18 @@ export function AppSidebar() {
       <SidebarHeader>
         <div className="jutify-center flex h-24 w-full items-center p-6">
           {logoSrc ? (
-            <Image src={logoSrc} alt="Logo" width={300} height={300} />
+            <Image
+              src={logoSrc}
+              alt="Logo"
+              width={300}
+              height={300}
+              className="rounded-3xl"
+            />
           ) : (
             <Skeleton className="h-12 w-full" />
           )}
         </div>
-        <div className="-mb-6 text-center font-bold">Team Sartorato</div>
+        <div className="-mb-6 text-center font-bold">Desafio Codifica.Dev</div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
