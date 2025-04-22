@@ -1,7 +1,7 @@
 import { type User } from 'next-auth';
 import { loginSchema } from '@/server/validations/auth';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { firebaseAuth } from '@/lib/firebase-client'; // conexão client-side Firebase para autenticação
+import bcrypt from 'bcryptjs';
+import { firestore } from '@/lib/firebase.admin';
 
 export async function authorize(
   credentials: Record<'username' | 'password', string> | undefined,
@@ -9,23 +9,35 @@ export async function authorize(
   try {
     const creds = await loginSchema.parseAsync(credentials);
 
-    // Autenticar no Firebase Authentication
-    const userCredential = await signInWithEmailAndPassword(
-      firebaseAuth,
-      creds.username,
-      creds.password,
-    );
-    const user = userCredential.user;
+    // Procurar o usuário no Firestore
+    const userSnapshot = await firestore
+      .collection('users')
+      .where('email', '==', creds.username.toLowerCase())
+      .limit(1)
+      .get();
 
-    if (!user) {
+    if (userSnapshot.empty) {
       return null;
     }
 
-    // Retornar o objeto User conforme o esperado pelo NextAuth
+    const userDoc = userSnapshot.docs[0];
+    const userData = userDoc?.data();
+
+    // Verificar senha usando bcryptjs
+    const isValidPassword = await bcrypt.compare(
+      creds.password,
+      userData?.password,
+    );
+
+    if (!isValidPassword) {
+      return null;
+    }
+
+    // Montar o objeto que o NextAuth espera
     const returnUser: User = {
-      id: user.uid,
-      name: user.displayName || '',
-      email: user.email || '',
+      id: userDoc?.id ?? '',
+      name: userData?.name,
+      email: userData?.email,
     };
 
     return returnUser;
