@@ -4,7 +4,6 @@ import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Trash2 } from 'lucide-react';
 import React from 'react';
-import { StudentCardProps } from './studentCard.types';
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -16,32 +15,26 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
-import { DrawerDialogDemo } from '@/components/forms/drawerDialog/drawerDialog.components';
-export const StudentCard: React.FC<StudentCardProps> = ({
-  name,
-  avatar,
-  email,
-  onClick,
-}) => {
+import { IClientCardProps } from './clientCard.types';
+export const ClientCard: React.FC<IClientCardProps> = ({ data, onClick }) => {
   return (
     <Card className="flex items-center justify-between p-4">
       <div className="flex items-center gap-4">
         <Avatar className="h-16 w-16">
           <AvatarImage
-            src={avatar}
+            src={data?.avatarUrl || ''}
             className="h-full w-full rounded-full object-cover"
           />
           <AvatarFallback className="bg-primary text-primary-foreground">
-            {getInitials(name)}
+            {getInitials(data?.name || '')}
           </AvatarFallback>
         </Avatar>
         <div>
-          <h2 className="text-lg font-medium">{name}</h2>
-          <p className="text-sm text-muted-foreground">{email}</p>
+          <h2 className="text-lg font-medium">{data?.name}</h2>
+          <p className="text-sm text-muted-foreground">{data?.email}</p>
         </div>
       </div>
       <div className="mr-2 flex gap-3">
-        <DrawerDialogDemo />
         {/* ALERT DIALOG */}
         <AlertDialog>
           <AlertDialogTrigger asChild>
@@ -55,7 +48,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({
                 Tem certeza que deseja excluir?
               </AlertDialogTitle>
               <AlertDialogDescription>
-                Essa ação não pode ser desfeita. O aluno será removido
+                Essa ação não pode ser desfeita. O cliente será removido
                 permanentemente do sistema.
               </AlertDialogDescription>
             </AlertDialogHeader>

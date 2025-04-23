@@ -4,11 +4,12 @@ import { BreadcrumbUpdater } from '@/contexts/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { UserPlus } from 'lucide-react';
 import { api } from '@/trpc/react';
-import { StudentCard } from '@/components/studentCard/studentCard.component';
 import { LoadingContent } from '@/components/LoadingContent';
 import { toast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { SheetCreateStudent } from '@/components/modals/createStudent/sheetCreateStudent.component';
+import { ClientCard } from '@/components/clientCard/clientCard.component';
+import { SheetCreateClient } from '@/components/modals/createClient/sheetCreateClient.component';
+import { IFirebaseClient } from '@/components/clientCard/clientCard.types';
 
 const breadcrumbItems = [
   {
@@ -16,37 +17,36 @@ const breadcrumbItems = [
     href: '/dashboard',
   },
   {
-    label: 'Alunos',
-    href: '/students',
+    label: 'Clientes',
+    href: '/clients',
   },
 ];
 
-export default function StudentsPage() {
+export default function ClientsPage() {
   const [showSheet, setShowSheet] = useState(false);
-  const studentsApi = api.student.getAll.useQuery({ page: 1, limit: 10 });
-  const deleteStudentApi = api.student.delete.useMutation({
+  const clientsApi = api.clients.getAll.useQuery({ page: 1, limit: 10 });
+  const deleteClientApi = api.clients.delete.useMutation({
     onSuccess: () => {
-      studentsApi.refetch();
+      clientsApi.refetch();
     },
     onError: (error) => {
       toast({
-        title: 'Erro ao deletar aluno',
+        title: 'Erro ao deletar cliente',
         description: error.message,
       });
     },
   });
+  const clientsData = clientsApi.data?.data as Array<IFirebaseClient>;
 
-  const { data: studentsData } = studentsApi;
-
-  if (studentsApi.isLoading) {
-    return <LoadingContent textLoading="Carregando alunos..." />;
+  if (clientsApi.isLoading) {
+    return <LoadingContent textLoading="Carregando clientes..." />;
   }
 
-  const handleDeleteStudent = async (studentId: string) => {
-    await deleteStudentApi.mutate({ id: studentId });
+  const handleDeleteStudent = async (clientId: string) => {
+    await deleteClientApi.mutate({ id: clientId });
     toast({
       title: 'Sucesso',
-      description: 'Aluno deletado com sucesso',
+      description: 'Cliente deletado com sucesso',
     });
   };
 
@@ -56,31 +56,29 @@ export default function StudentsPage() {
 
       <main className="flex flex-col gap-6 py-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Alunos</h1>
+          <h1 className="text-2xl font-bold">Clientes</h1>
           <Button onClick={() => setShowSheet(true)}>
             <UserPlus className="mr-2 h-4 w-4" />
-            Adicionar Aluno
+            Criar cliente
           </Button>
         </div>
 
         <div className="flex flex-col gap-4">
-          {studentsData?.data.map((student) => (
-            <StudentCard
-              key={student.id}
-              name={student.name}
-              avatar={student?.avatar || ''}
-              email={student.email}
-              onClick={() => handleDeleteStudent(student.id)}
+          {clientsData?.map((client: IFirebaseClient) => (
+            <ClientCard
+              key={client.id}
+              data={client}
+              onClick={() => handleDeleteStudent(client.id)}
             />
           ))}
         </div>
 
         {showSheet && (
-          <SheetCreateStudent
+          <SheetCreateClient
             side="right"
             isOpen={showSheet}
             setIsOpen={setShowSheet}
-            refetch={studentsApi.refetch}
+            refetch={clientsApi.refetch}
           />
         )}
       </main>

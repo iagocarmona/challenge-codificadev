@@ -21,7 +21,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
+    <html
+      lang="en"
+      className={`${GeistSans.variable}`}
+      suppressHydrationWarning
+    >
       <body>
         <NextAuthProvider>
           <TRPCReactProvider>
@@ -34,8 +38,8 @@ export default function RootLayout({
               >
                 <BreadcrumbProvider>
                   <TooltipProvider>
-                    {children}
                     <Toaster />
+                    {children}
                   </TooltipProvider>
                 </BreadcrumbProvider>
               </ThemeProvider>

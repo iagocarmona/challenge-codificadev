@@ -3,7 +3,6 @@ import { paginationSchema } from '@/server/validations/pagination';
 
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { del } from '@vercel/blob';
 import { firestore } from '@/lib/firebase.admin';
 import {
   createClientSchema,
@@ -43,8 +42,11 @@ export const clientsRouter = createTRPCRouter({
           name: input.name,
           phone: input.phone,
           cnpj: input.cnpj,
-          avatar: input.avatarUrl,
+          avatarUrl: input.avatarUrl,
+          status: input.status,
+          monthlyPayment: input.monthlyPayment,
           createdAt: new Date(),
+          createdBy: userId,
         });
 
         const createdClient = await newClientRef.get();
@@ -79,6 +81,14 @@ export const clientsRouter = createTRPCRouter({
 
       const clientDoc = clientsCollection.doc(input.clientId);
       const clientSnap = await clientDoc.get();
+      const clientData = clientSnap.data();
+
+      if (clientData?.createdBy !== userId) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Você não tem permissão para alterar esse cliente.',
+        });
+      }
 
       if (!clientSnap.exists) {
         throw new TRPCError({
@@ -88,7 +98,7 @@ export const clientsRouter = createTRPCRouter({
       }
 
       await clientDoc.update({
-        avatar: input.avatarUrl,
+        avatarUrl: input.avatarUrl,
       });
 
       return {
@@ -114,6 +124,7 @@ export const clientsRouter = createTRPCRouter({
 
       try {
         const clientsQuerySnapshot = await clientsCollection
+          .where('createdBy', '==', userId)
           .orderBy('createdAt', 'desc')
           .offset(offset)
           .limit(limit)
@@ -173,16 +184,6 @@ export const clientsRouter = createTRPCRouter({
           code: 'NOT_FOUND',
           message: 'Cliente não encontrado',
         });
-      }
-
-      const clientData = clientSnap.data();
-
-      if (clientData?.avatar) {
-        try {
-          await del(clientData.avatar);
-        } catch (err) {
-          console.error('Erro ao deletar avatar:', err);
-        }
       }
 
       await clientDoc.delete();

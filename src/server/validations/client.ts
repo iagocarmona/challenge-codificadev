@@ -6,7 +6,7 @@ export const createClientSchema = z.object({
   phone: z.string().min(10, 'Por favor, insira um telefone válido'),
   avatarUrl: z.string().nullable(),
   cnpj: z.string().min(14, 'Por favor, insira um CNPJ válido'),
-  status: z.enum(['active', 'inactive']),
+  status: z.enum(['active', 'inactive']).default('active'),
   monthlyPayment: z.string().min(1, 'Por favor, insira um valor valido'),
 });
 
@@ -23,6 +23,6 @@ export const defaultCreateClientValues = {
   phone: '',
   avatarUrl: '',
   cnpj: '',
-  status: 'active',
+  status: 'active' as 'active' | 'inactive',
   monthlyPayment: '',
 };

@@ -4,7 +4,7 @@ import { uploadFileSchema } from '@/server/validations/files';
 import { TRPCError } from '@trpc/server';
 import { v4 as uuidv4 } from 'uuid';
 
-const MAX_FILE_UPLOAD_SIZE = 4.5 * 1024 * 1024; // 4.5 MB
+const MAX_FILE_UPLOAD_SIZE = 4.5 * 1024 * 1024;
 
 export const filesRouter = createTRPCRouter({
   upload: protectedProcedure
@@ -48,8 +48,7 @@ export const filesRouter = createTRPCRouter({
           userId,
           filename,
           size: buffer.length,
-          mimeType: 'application/octet-stream', // ou detectar dinamicamente
-          base64: file, // 🔥 salva o base64 diretamente no Firestore
+          base64: file,
           createdAt: new Date(),
         };
 
@@ -59,6 +58,7 @@ export const filesRouter = createTRPCRouter({
           ok: true,
           fileId,
           filename,
+          file,
         };
       } catch (error) {
         console.error('Erro ao salvar arquivo no Firestore:', error);
