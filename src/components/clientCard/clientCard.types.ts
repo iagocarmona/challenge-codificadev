@@ -7,4 +7,6 @@ export interface IFirebaseClient extends IClientCreateTypes {
 export interface IClientCardProps {
   data: IFirebaseClient;
   onClick?: () => void;
+  onDelete?: (_clientId: string) => void;
+  refetch?: () => void;
 }

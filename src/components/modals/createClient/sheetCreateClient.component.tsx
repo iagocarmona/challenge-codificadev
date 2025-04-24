@@ -22,11 +22,9 @@ import {
   unmaskCellphone,
   unmaskCNPJ,
   unmaskDecimal,
-} from '@/utils/masksUtils';
+} from '@/common/utils/masksUtils';
 import { Separator } from '@/components/ui/separator';
 import { api } from '@/trpc/react';
-import { FormFileInputComponent } from '@/components/forms/formFileInput/formFileInput.component';
-import { blobUrlToBase64 } from '@/common/utils/files';
 import {
   createClientSchema,
   defaultCreateClientValues,
@@ -41,9 +39,7 @@ export const SheetCreateClient: React.FC<ISheetCreateClient> = ({
   refetch,
 }) => {
   const { toast } = useToast();
-
   const createUser = api.clients.create.useMutation();
-  const { mutateAsync: uploadFile } = api.files.upload.useMutation();
 
   const form = useForm<IClientCreateTypes>({
     resolver: zodResolver(createClientSchema),
@@ -53,22 +49,19 @@ export const SheetCreateClient: React.FC<ISheetCreateClient> = ({
 
   const onSubmit = async (data: IClientCreateTypes) => {
     try {
-      let avatarRealUrl = '';
-      if (data.avatarUrl) {
-        const base64 = await blobUrlToBase64(data.avatarUrl);
+      // let avatarRealUrl = '';
+      // if (data.avatarUrl) {
+      //   const base64 = await blobUrlToBase64(data.avatarUrl);
 
-        const result = await uploadFile({
-          filename: `avatar_${data.name}`,
-          file: base64,
-        });
+      //   const result = await uploadFile({
+      //     filename: `avatar_${data.name}`,
+      //     file: base64,
+      //   });
 
-        avatarRealUrl = result.file;
-      }
+      //   avatarRealUrl = result.file;
+      // }
 
-      await createUser.mutateAsync({
-        ...data,
-        avatarUrl: avatarRealUrl,
-      });
+      await createUser.mutateAsync(data);
 
       setIsOpen(false);
       if (refetch) refetch();
@@ -98,7 +91,7 @@ export const SheetCreateClient: React.FC<ISheetCreateClient> = ({
       >
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <SheetHeader className="mx-2 mb-12 flex">
+            <SheetHeader className="mx-2 mb-2 flex">
               <div className="mb-8 flex flex-col">
                 <SheetTitle className="text-2xl">
                   Criar um Novo Cliente
@@ -107,7 +100,7 @@ export const SheetCreateClient: React.FC<ISheetCreateClient> = ({
                   Informe os dados abaixo de seu cliente
                 </SheetDescription>
               </div>
-
+              {/* 
               <div className="flex w-full justify-center">
                 <FormFileInputComponent
                   control={form.control}
@@ -116,7 +109,7 @@ export const SheetCreateClient: React.FC<ISheetCreateClient> = ({
                   type="file"
                   accept=".jpg, .jpeg, .png"
                 />
-              </div>
+              </div> */}
             </SheetHeader>
 
             <Separator />

@@ -8,8 +8,8 @@ import { LoadingContent } from '@/components/LoadingContent';
 import { toast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { ClientCard } from '@/components/clientCard/clientCard.component';
-import { SheetCreateClient } from '@/components/modals/createClient/sheetCreateClient.component';
 import { IFirebaseClient } from '@/components/clientCard/clientCard.types';
+import { SheetCreateClient } from '@/components/modals/createClient/sheetCreateClient.component';
 
 const breadcrumbItems = [
   {
@@ -68,7 +68,7 @@ export default function ClientsPage() {
             <ClientCard
               key={client.id}
               data={client}
-              onClick={() => handleDeleteStudent(client.id)}
+              onDelete={() => handleDeleteStudent(client.id)}
             />
           ))}
         </div>

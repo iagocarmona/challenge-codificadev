@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Check, Eye, EyeOff, Mail, Smartphone, User, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { api } from '@/trpc/react';
-import { maskCellphone, unmaskCellphone } from '@/utils/masksUtils';
+import { maskCellphone, unmaskCellphone } from '@/common/utils/masksUtils';
 import { FormCheckboxComponent } from '@/components/forms/formCheckboxInput/formCheckboxInput.component';
 import {
   Dialog,
@@ -25,7 +25,7 @@ import {
   registerSchema,
   RegisterSchemaTypes,
 } from '@/server/validations/register.schema';
-import { passwordRequirements } from '@/utils/regexUtils';
+import { passwordRequirements } from '@/common/utils/regexUtils';
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
