@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { ClientCard } from '@/components/clientCard/clientCard.component';
 import { IFirebaseClient } from '@/components/clientCard/clientCard.types';
 import { SheetCreateClient } from '@/components/modals/createClient/sheetCreateClient.component';
+import { SheetEditClient } from '@/components/modals/EditStudent/sheetEditClient.component';
 
 const breadcrumbItems = [
   {
@@ -24,10 +25,21 @@ const breadcrumbItems = [
 
 export default function ClientsPage() {
   const [showSheet, setShowSheet] = useState(false);
-  const clientsApi = api.clients.getAll.useQuery({ page: 1, limit: 10 });
+
+  const [showEdit, setShowEdit] = useState(false);
+  const [editClientId, setEditClientId] = useState<string | null>(null);
+
+  const {
+    data: clientsApi,
+    refetch,
+    isLoading,
+  } = api.clients.getAll.useQuery({
+    page: 1,
+    limit: 10,
+  });
   const deleteClientApi = api.clients.delete.useMutation({
     onSuccess: () => {
-      clientsApi.refetch();
+      refetch();
     },
     onError: (error) => {
       toast({
@@ -36,18 +48,23 @@ export default function ClientsPage() {
       });
     },
   });
-  const clientsData = clientsApi.data?.data as Array<IFirebaseClient>;
+  const clientsData = clientsApi?.data as Array<IFirebaseClient>;
 
-  if (clientsApi.isLoading) {
+  if (isLoading) {
     return <LoadingContent textLoading="Carregando clientes..." />;
   }
 
-  const handleDeleteStudent = async (clientId: string) => {
+  const handleDeleteClient = async (clientId: string) => {
     await deleteClientApi.mutate({ id: clientId });
     toast({
       title: 'Sucesso',
       description: 'Cliente deletado com sucesso',
     });
+  };
+
+  const handleEdit = (id: string) => {
+    setEditClientId(id);
+    setShowEdit(true);
   };
 
   return (
@@ -68,7 +85,8 @@ export default function ClientsPage() {
             <ClientCard
               key={client.id}
               data={client}
-              onDelete={() => handleDeleteStudent(client.id)}
+              onDelete={() => handleDeleteClient(client.id)}
+              onEdit={handleEdit}
             />
           ))}
         </div>
@@ -78,7 +96,17 @@ export default function ClientsPage() {
             side="right"
             isOpen={showSheet}
             setIsOpen={setShowSheet}
-            refetch={clientsApi.refetch}
+            refetch={refetch}
+          />
+        )}
+
+        {showEdit && editClientId && (
+          <SheetEditClient
+            side="right"
+            isOpen={showEdit}
+            setIsOpen={(open) => setShowEdit(open)}
+            clientId={editClientId}
+            refetch={refetch}
           />
         )}
       </main>

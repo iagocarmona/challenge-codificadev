@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -10,8 +10,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { Form } from '@/components/ui/form';
+import { FormProvider, useForm, SubmitHandler } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
 import { FormInputComponent } from '@/components/forms/formInput/formInput.component';
 import {
@@ -41,22 +40,28 @@ export const SheetEditClient: React.FC<ISheetEditClient> = ({
   clientId,
 }) => {
   const { toast } = useToast();
+
   const { data: clientRes, isLoading: loadingClient } =
-    api.clients.getById.useQuery({ id: clientId! });
+    api.clients.getById.useQuery(
+      { id: clientId! },
+      {
+        enabled: isOpen,
+        refetchOnMount: 'always',
+      },
+    );
 
   const updateMutation = api.clients.update.useMutation({
-    onSuccess: async () => {
-      if (refetch) await refetch();
+    onSuccess: () => {
       setIsOpen(false);
+      if (refetch) refetch();
 
-      toast?.({
+      toast({
         title: 'Sucesso',
         description: 'Cliente atualizado',
-        variant: 'default',
       });
     },
     onError: (err) => {
-      toast?.({
+      toast({
         title: 'Erro',
         description: err.message,
         variant: 'destructive',
@@ -67,39 +72,53 @@ export const SheetEditClient: React.FC<ISheetEditClient> = ({
   const form = useForm<IClientUpdateTypes>({
     resolver: zodResolver(updateClientSchema),
     defaultValues: {
-      id: clientRes?.data.id || '',
-      name: clientRes?.data.name || '',
-      email: clientRes?.data.email || '',
-      phone: clientRes?.data.phone || '',
-      cnpj: clientRes?.data.cnpj || '',
-      status: clientRes?.data.status || 'active',
-      monthlyPayment: clientRes?.data.monthlyPayment || '0',
+      id: clientId!,
+      name: '',
+      email: '',
+      phone: '',
+      cnpj: '',
+      status: 'active',
+      monthlyPayment: '0',
     },
     mode: 'onChange',
   });
 
-  const onSubmit = async (data: IClientUpdateTypes) => {
-    try {
-      await updateMutation.mutateAsync({ ...data });
-    } catch (error) {
-      console.error(error);
+  useEffect(() => {
+    if (clientRes?.data) {
+      form.reset({
+        id: clientId!,
+        name: clientRes.data.name,
+        email: clientRes.data.email,
+        phone: clientRes.data.phone,
+        cnpj: clientRes.data.cnpj,
+        status: clientRes.data.status,
+        monthlyPayment: clientRes.data.monthlyPayment,
+      });
     }
+  }, [clientRes?.data, clientId, form]);
+
+  const onSubmit: SubmitHandler<IClientUpdateTypes> = async (data) => {
+    await updateMutation.mutateAsync(data);
   };
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetContent side={side} className="min-w-[40vw] xl:min-w-[30vw]">
         <SheetHeader className="flex flex-col gap-2">
-          <SheetTitle className="text-2xl">Editar Cliente</SheetTitle>
+          <SheetTitle>Editar Cliente</SheetTitle>
           <SheetDescription>
             Atualize os dados do cliente abaixo
           </SheetDescription>
         </SheetHeader>
+
         {loadingClient ? (
           <LoadingContent textLoading="Carregando dados..." />
         ) : (
-          <Form {...form}>
+          <FormProvider {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
+              {/* id escondido */}
+              <input type="hidden" {...form.register('id')} />
+
               <Separator className="my-4" />
 
               <div className="grid grid-cols-2 gap-4">
@@ -113,6 +132,7 @@ export const SheetEditClient: React.FC<ISheetEditClient> = ({
                   maxLength={30}
                   className="col-span-4"
                 />
+                {/* ... demais campos exatamente como estavam */}
                 <FormInputComponent
                   control={form.control}
                   name="email"
@@ -167,12 +187,19 @@ export const SheetEditClient: React.FC<ISheetEditClient> = ({
               </div>
 
               <div className="mt-6 flex justify-end">
-                <Button type="submit" disabled={form.formState.isSubmitting}>
-                  {form.formState.isSubmitting ? 'Atualizando...' : 'Atualizar'}
+                <Button
+                  type="submit"
+                  disabled={
+                    form.formState.isSubmitting || !form.formState.isValid
+                  }
+                >
+                  {form.formState.isSubmitting
+                    ? 'Atualizando…'
+                    : 'Atualizar dados'}
                 </Button>
               </div>
             </form>
-          </Form>
+          </FormProvider>
         )}
       </SheetContent>
     </Sheet>
