@@ -31,6 +31,7 @@ import {
 import { ISheetEditClient } from './sheetEditClient.types';
 import { LoadingContent } from '@/components/LoadingContent';
 import { FormSelectComponent } from '@/components/forms/formSelectInput/formSelectInput.component';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export const SheetEditClient: React.FC<ISheetEditClient> = ({
   side,
@@ -40,6 +41,7 @@ export const SheetEditClient: React.FC<ISheetEditClient> = ({
   clientId,
 }) => {
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const { data: clientRes, isLoading: loadingClient } =
     api.clients.getById.useQuery(
@@ -103,7 +105,10 @@ export const SheetEditClient: React.FC<ISheetEditClient> = ({
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetContent side={side} className="min-w-[40vw] xl:min-w-[30vw]">
+      <SheetContent
+        side={isMobile ? 'bottom' : side}
+        className="min-w-[40vw] xl:min-w-[30vw]"
+      >
         <SheetHeader className="flex flex-col gap-2">
           <SheetTitle>Editar Cliente</SheetTitle>
           <SheetDescription>

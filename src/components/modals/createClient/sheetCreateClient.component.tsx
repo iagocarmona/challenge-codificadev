@@ -31,6 +31,7 @@ import {
   IClientCreateTypes,
 } from '@/server/validations/client';
 import { ISheetCreateClient } from './sheetCreateClient.types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export const SheetCreateClient: React.FC<ISheetCreateClient> = ({
   side,
@@ -39,6 +40,7 @@ export const SheetCreateClient: React.FC<ISheetCreateClient> = ({
   refetch,
 }) => {
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const createUser = api.clients.create.useMutation();
 
   const form = useForm<IClientCreateTypes>({
@@ -86,7 +88,7 @@ export const SheetCreateClient: React.FC<ISheetCreateClient> = ({
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetContent
-        side={side}
+        side={isMobile ? 'bottom' : side}
         className="min-w-[40vw] items-center overflow-auto xl:min-w-[30vw]"
       >
         <Form {...form}>
