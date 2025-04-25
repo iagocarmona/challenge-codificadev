@@ -5,7 +5,7 @@ import { UserProfileContainer } from '@/components/layout/UserProfileContainer';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import AppSidebarProvider from '@/providers/sidebarProvider';
 
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
