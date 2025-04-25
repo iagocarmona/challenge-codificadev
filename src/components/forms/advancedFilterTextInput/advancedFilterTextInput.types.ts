@@ -1,7 +1,7 @@
 import type { ButtonProps } from 'react-day-picker';
 import type { DefaultValues, Path, ValidationMode } from 'react-hook-form';
 import type { ZodType } from 'zod';
-import type { FormInputComponentProps } from '../formInput/formInput.component.types';
+import { FormInputComponentProps } from '../formInput/formInput.types';
 
 export interface AdvancedFilterTextInputProps<T>
   extends Omit<FormInputComponentProps, 'defaultValue' | 'onChange'> {

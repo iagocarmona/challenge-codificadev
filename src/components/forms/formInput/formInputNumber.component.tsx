@@ -4,7 +4,6 @@ import type { FieldValues, UseControllerProps } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
 import { Minus, Plus } from 'lucide-react';
-import type { FormInputComponentProps } from './formInput.component.types';
 import {
   FormControl,
   FormDescription,
@@ -16,6 +15,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { FormInputComponentProps } from './formInput.types';
 
 export const FormInputNumberComponent = <T extends FieldValues>({
   control,
