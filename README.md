@@ -1,29 +1,86 @@
-# Create T3 App
+# 🚀 Desafio Técnico - CRUD de Clientes
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+> Projeto desenvolvido para o processo seletivo da **Codifica Dev** (Tapejara-PR)
 
-## What's next? How do I make an app with this?
+---
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## 📋 Sumário
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+- [Sobre o Projeto](#-sobre-o-projeto)
+- [Funcionalidades](#-funcionalidades)
+- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
+- [Instalação](#-instalação)
+- [Como Executar](#-como-executar)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Autor](#-autor)
+- [Licença](#-licença)
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+---
 
-## Learn More
+## 🔍 Sobre o Projeto
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+Este projeto consiste em um **sistema de gerenciamento de clientes** (CRUD), desenvolvido como desafio técnico para a equipe da Codifica Dev, em Tapejara-PR.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+A aplicação permite:
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+- Listar clientes cadastrados
+- Adicionar novos clientes
+- Editar informações existentes
+- Remover clientes
 
-## How do I deploy this?
+Todo o fluxo de autenticação (login, logout e controle de acesso) garante que apenas usuários autenticados possam interagir com o CRUD.
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+---
+
+## ✨ Funcionalidades
+
+- **Autenticação híbrida**: login via Google OAuth e login manual com e-mail e senha (Firebase Auth)
+- **CRUD completo de clientes**: criação, leitura, atualização e exclusão
+- **Validação robusta de formulários**: Zod + React Hook Form
+- **Middleware de RBAC**: proteção de rotas e procedimentos com controle de permissões
+- **UI moderna e responsiva**: componentes do Shadcn UI estilizados com Tailwind CSS
+- **Feedback instantâneo**: toasts e loaders para experiência de usuário fluida
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+| Camada        | Ferramenta / Biblioteca     |
+| ------------- | --------------------------- |
+| **Frontend**  | Next.js (App Router)        |
+| **API**       | tRPC (t3 Stack)             |
+| **Autenticação** | Firebase Auth (Google & Manual) |
+| **Validação** | Zod & React Hook Form       |
+| **UI**        | Shadcn UI Components        |
+| **Estilos**   | Tailwind CSS                |
+| **Middleware**| tRPC Middlewares (RBAC)     |
+
+---
+
+## 🚀 Instalação
+
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/seu-usuario/codifica-dev-desafio.git
+   cd codifica-dev-desafio
+   npm i
+   ```
+2. Configure as variáveis de ambiente:
+   ```bash
+    AUTH_SECRET=
+    NEXTAUTH_SECRET=
+    
+    GOOGLE_CLIENT_ID=
+    GOOGLE_CLIENT_SECRET=
+    
+    GOOGLE_APPLICATION_CREDENTIALS={}
+    
+    
+    FIREBASE_API_KEY=
+    FIREBASE_AUTH_DOMAIN=
+    FIREBASE_PROJECT_ID=
+    FIREBASE_STORAGE_BUCKET=
+    FIREBASE_MESSAGING_SENDER_ID=
+    FIREBASE_APP_ID=
+    FIREBASE_MEASUREMENT_ID=
+```
