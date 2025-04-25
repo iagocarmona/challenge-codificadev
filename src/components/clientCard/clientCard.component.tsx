@@ -34,7 +34,7 @@ export const ClientCard: React.FC<IClientCardProps> = ({
   // classes de status
   const badgeClasses =
     data.status === 'active'
-      ? 'bg-green-500 text-white'
+      ? 'bg-green-500 text-white hover:bg-green-500/85'
       : 'bg-red-500 text-white';
 
   return (
